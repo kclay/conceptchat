@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="300"
+			   height="194"
+			   title="You are about to add an ban for {username}."
+			   close="dispatchEvent(new BanWindowEvent(BanWindowEvent.CANCEL))"
+			   xmlns:views="com.conceptualideas.chat.plugins.admin.views.*">
+
+	<fx:Declarations>
+		<s:RadioButtonGroup id="timeSpanGroup"/>
+	</fx:Declarations>
+
+	<fx:Metadata>
+		[Event(name="addban",type="com.conceptualideas.chat.plugins.admin.events.BanWindowEvent")]
+		[Event(name="cancel",type="com.conceptualideas.chat.plugins.admin.events.BanWindowEvent")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.conceptualideas.chat.plugins.admin.events.BanWindowEvent;
+			[Bindable]
+			public var username:String;
+
+
+			private var _netmask:String
+
+			override protected function createChildren():void{
+				super.createChildren();
+				if(_netmask)
+					uiNetMask.netmask = _netmask;
+			}
+			public function set netmask(value:String):void
+			{
+
+				_netmask = value;
+				if (uiNetMask)
+					uiNetMask.netmask = value;
+			}
+
+			public function get netmask():String
+			{
+				return uiNetMask.netmask;
+			}
+		]]>
+	</fx:Script>
+	<s:RadioButton label="Temporary"
+				   group="{timeSpanGroup}"
+				   selected="true"
+				   x="101"
+				   y="28"
+				   value="2"/>
+	<s:RadioButton label="Permanent"
+				   group="{timeSpanGroup}"
+				   x="184"
+				   y="28"
+				   value="1"/>
+	<views:NetMaskTextInput id="uiNetMask"
+							x="100"
+							y="49"/>
+	<s:Button label="Add Ban"
+			  x="62"
+			  y="109"
+			  click="dispatchEvent(new BanWindowEvent(
+			  	BanWindowEvent.ADD_BAN,username,int(timeSpanGroup.selectedValue),
+			  	int(timeLimit.text)))"/>
+	<s:Button label="Cancel"
+			  click="dispatchEvent(new BanWindowEvent(BanWindowEvent.CANCEL))"
+			  x="159"
+			  y="109"/>
+	<s:Label x="10"
+			 y="34"
+			 text="TimeSpan:"
+			 width="74"
+			 textAlign="right"/>
+	<s:Label x="10.35"
+			 y="9.05"
+			 text="You can ban by ip or by wildcard netmask using *"
+			 width="278"
+			 textAlign="left"/>
+	<s:Label x="10"
+			 y="84"
+			 text="Time in Mins:"
+			 textAlign="right"/>
+	<s:Label x="10"
+			 y="55"
+			 text="Netmask:"
+			 width="73"
+			 textAlign="right"/>
+	<s:TextInput x="99"
+				 visible="{timeSpanGroup.selectedValue == 2}"
+				 y="74"
+				 text="5"
+				 restrict="0-9"
+				 id="timeLimit"/>
+</s:TitleWindow>

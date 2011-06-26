@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 implements="com.conceptualideas.chat.interfaces.IDock, com.conceptualideas.chat.interfaces.IDisposable"
+		 mouseChildren="true">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.core.IUIComponent;
+			import mx.core.IVisualElement;
+
+			import spark.components.ToggleButton;
+			private var callbacks:Dictionary = new Dictionary();
+
+			private var dockMXMLContent:Array = [];
+
+			override protected function createChildren():void
+			{
+				super.createChildren();
+				var element:IVisualElement;
+				while (element = dockMXMLContent.shift())
+				{
+					addElement(element);
+				}
+
+				dockMXMLContent = null;
+			}
+
+			public function add(name:String, obj:Sprite, callback:Function=null):void
+			{
+
+
+				obj.name = name;
+
+				if (callback != null)
+				{
+					//obj.useHandCursor = true;
+					//	obj.buttonMode = true;
+					obj.addEventListener(MouseEvent.CLICK, clickHandler);
+					callbacks[obj] = callback;
+				}
+				if (dockMXMLContent)
+				{
+
+					dockMXMLContent.push(obj);
+				}
+				else
+				{
+
+					addElement(IVisualElement(obj));
+					validateSize(true)
+				}
+
+
+			}
+
+			public function retrive(name:String):DisplayObject
+			{
+				return getChildByName(name);
+			}
+
+			public function remove(name:String):DisplayObject
+			{
+
+				var child:DisplayObject = retrive(name);
+				if (child)
+				{
+					removeElement(IVisualElement(child));
+					child.removeEventListener(MouseEvent.CLICK, clickHandler);
+					callbacks[name] = null;
+
+				}
+				return child;
+			}
+
+			private function clickHandler(e:MouseEvent):void
+			{
+				invokeClickCallback(e.target);
+			}
+
+			protected function invokeClickCallback(target:Object):void
+			{
+				if (callbacks[target])
+					callbacks[target]();
+			}
+
+			public function dispose():void
+			{
+
+				while (numChildren > 0)
+				{
+					remove(getChildAt(0).name);
+				}
+				callbacks = null;
+			}
+		]]>
+	</fx:Script>
+
+</s:Group>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					  xmlns:s="library://ns.adobe.com/flex/spark"
+					  xmlns:mx="library://ns.adobe.com/flex/mx"
+					  xmlns:views="com.conceptualideas.chat.views.*"
+					  creationComplete="init()"
+					  implements="com.conceptualideas.chat.interfaces.IChatScreen, com.conceptualideas.chat.interfaces.IDisposable, com.conceptualideas.chat.interfaces.IDockable"
+					  width="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Metadata>
+		[Style(name="enabledEmoticonIcon",type="Boolean")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.conceptualideas.chat.events.ChatScreenEvent;
+			import com.conceptualideas.chat.interfaces.IComposerContext;
+			import com.conceptualideas.chat.interfaces.IDock;
+			import com.conceptualideas.chat.models.ChatFieldMessage;
+
+			import flashx.textLayout.elements.TextFlow;
+
+			import mx.core.IUIComponent;
+
+			public var messagePreHandler:Function
+			public var messagePostHandler:Function
+
+			[Bindable]
+			private var _enabledInput:Boolean
+
+			[Bindable]
+			public var includeEmoticons:Boolean
+
+			public function getDock(location:String="default"):IDock
+			{
+				return dock;
+			}
+
+
+			private function init():void
+			{
+				if (!hasEventListener(KeyboardEvent.KEY_UP))
+					addEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false);
+				if (getStyle("enabledEmoticonIcon"))
+				{
+					var emoticons:Button = new Button();
+					emoticons.styleName = "emoticonButton";
+					emoticons.width = 20;
+					emoticons.height = 20;
+					emoticons.useHandCursor = true;
+					emoticons.buttonMode = true;
+					dock.add("emoticons", emoticons, handleEmoticons);
+				}
+
+
+			}
+
+			public function setHandlers(messagePreHandler:Function, messagePostHandler:Function):void
+			{
+				this.messagePreHandler = messagePreHandler;
+				this.messagePostHandler = messagePostHandler;
+			}
+
+			public function clear():void
+			{
+				chatWindow.clear();
+
+			}
+
+			public function get textFlow():TextFlow
+			{
+
+				return chatWindow.textFlow;
+			}
+
+			override protected function keyUpHandler(event:KeyboardEvent):void
+			{
+				super.keyUpHandler(event);
+
+				var comp:IUIComponent = focusManager.getFocus() as IUIComponent;
+
+				var inputHasFocus:Boolean = comp.name == "uiTextInput";
+				if (event.keyCode == Keyboard.ENTER && inputHasFocus)
+					sendMessage();
+			}
+
+			public function set composerContext(value:IComposerContext):void
+			{
+				if (chatWindow)
+					chatWindow.composerContext = value;
+			}
+
+			public function get composerContext():IComposerContext
+			{
+				if (!chatWindow)
+					return null;
+				return chatWindow.composerContext;
+			}
+
+
+
+			public function appendText(text:String):void
+			{
+				uiTextInput.appendText(text);
+			}
+
+			public function addMessage(chatMessage:ChatFieldMessage):void
+			{
+
+				chatWindow.addMessage(chatMessage);
+
+			}
+
+			public function dispatchMessage(message:String):Boolean
+			{
+				var event:ChatScreenEvent = new ChatScreenEvent(ChatScreenEvent.PRE_SEND_MESSAGE, true, true);
+				dispatchEvent(event);
+				if (event.isDefaultPrevented())
+					return false;
+				if (messagePreHandler != null)
+					message = messagePreHandler(message);
+				if (message == "")
+					return false;
+
+				var chatMessage:ChatFieldMessage = new ChatFieldMessage();
+				chatMessage.message = message;
+				if (messagePostHandler != null)
+					messagePostHandler(chatMessage);
+
+				return true;
+
+			}
+
+			private function sendMessage():void
+			{
+				if (dispatchMessage(uiTextInput.text))
+				{
+					uiTextInput.text = ""
+				}
+
+
+			}
+
+			private function handleEmoticons():void
+			{
+				dispatchEvent(new Event("showEmoticons"));
+			}
+
+			public function dispose():void
+			{
+				removeEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false);
+				messagePreHandler = null;
+				messagePostHandler = null;
+				chatWindow.dispose();
+			}
+		]]>
+	</fx:Script>
+
+	<s:VGroup left="5"
+			  bottom="29"
+			  right="5"
+			  top="0">
+		<views:Dock id="dock"
+					width="100%" />
+		
+		<views:TLFChatWindow id="chatWindow"
+						  width="100%"
+						  editable="false"
+						  selectable="true" height="100%"
+						  />
+	</s:VGroup>
+
+
+
+
+
+	<s:TextInput id="uiTextInput"
+				 name="uiTextInput"
+				 click="focusManager.setFocus(uiTextInput)"
+				 bottom="5"
+				 left="5"
+				 right="80"/>
+
+
+	<s:Button label="Send"
+			  right="5"
+			  bottom="5"
+			  click="sendMessage()"
+			  height="22"/>
+</s:SkinnableContainer>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<data>
+
+	
+	<plugins>
+		<plugin className="com.hotcamboiz.modules.chatroom.plugins::ChatUserManagerPlugin"/>		
+		<plugin className="com.hotcamboiz.modules.chatroom.plugins::ProfileContextMenuPlugin"/>		
+		<plugin className="com.hotcamboiz.modules.chatroom.plugins::ContextMenuWatcherPlugin"/>		
+	</plugins>
+	<composer useEmoticons="true">
+		<extras>
+			<extra className="com.conceptualideas.chat.core::EmoticonComposerMapper" name="emoticonMapper">
+				<emoticons>
+					<emoticon>
+						<emot>:BEER:</emot>
+						<url>/flash/beer.gif</url>
+					</emoticon>
+				</emoticons>
+			</extra>
+			
+		</extras>
+		<parsers>
+			<parser className="com.conceptualideas.chat.parsers::EmoticonParser">
+				<mapper useExtra="true">emoticonMapper</mapper>
+			</parser>
+			<parser className="com.conceptualideas.chat.parsers::LinkParser">
+				<linkFrontColor>#FF0000</linkFrontColor>				
+			</parser>				
+		</parsers>
+	</composer>
+</data>

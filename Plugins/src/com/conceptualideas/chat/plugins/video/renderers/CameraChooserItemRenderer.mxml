@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				autoDrawBackground="false"
+				rollOver="rollHandler(event)"
+				rollOut="border.visible = false"
+				height="120"
+				width="160"
+				xmlns:views="com.conceptualideas.chat.plugins.video.views.*"
+				removedFromStage="removedFromStageHandler(event)"
+				click="clickHandler(event)">
+
+
+	<fx:Script>
+		<![CDATA[
+			import com.conceptualideas.chat.plugins.video.views.VideoBlock;
+			import com.conceptualideas.chat.utils.Disposer;
+
+			import mx.core.IVisualElement;
+
+			[Bindable]
+			private var micOnly:Boolean
+			[Bindable]
+			private var hasCamera:Boolean
+			//private var block:IVisualElement
+			[Bindable]
+			private var camera:String
+
+			// have to set camera as a global var or listeners will not work
+			private var activeCam:Camera
+
+
+			private function rollHandler(e:Event):void
+			{
+				border.visible = (e.type == MouseEvent.ROLL_OVER)
+
+			}
+
+			private function removedFromStageHandler(e:Event):void
+			{
+				e.target.removeEventListener(e.type, removedFromStageHandler);
+				dispose();
+			}
+
+
+			private function dispose():void
+			{
+				if (activeCam)
+				{
+					activeCam.removeEventListener(StatusEvent.STATUS, onCameraStatus)
+				}
+				activeCam = null;
+				var block:VideoBlock = getElementAt(0) as VideoBlock;
+				if (block)
+					block.dispose();
+				camera = null;
+				Disposer.dispose(noCameraImage);
+				Disposer.dispose(onlyMicImage);
+				removeEventListener(MouseEvent.CLICK, clickHandler);
+
+
+			}
+
+			private function showCamera():void
+			{
+
+
+				activeCam = Camera.getCamera(data.cameraIndex);
+
+				if (activeCam.muted)
+				{
+					activeCam.addEventListener(StatusEvent.STATUS, onCameraStatus)
+
+					Security.showSettings(SecurityPanel.PRIVACY);
+
+				}
+				else
+				{
+					currentState = "cameraPermission";
+					var block:VideoBlock = getElementAt(0) as VideoBlock;
+					block.video.attachCamera(activeCam);
+				}
+
+				camera = data.name;
+			}
+
+
+			private function onCameraStatus(e:StatusEvent):void
+			{
+
+				if (e.code == "Camera.Unmuted")
+				{
+					currentState = "cameraPermission"
+					var block:VideoBlock = getElementAt(0) as VideoBlock;
+					block.currentState = "preview";
+					block.video.attachCamera(activeCam);
+
+				}
+				else
+				{
+					currentState = "camera";
+				}
+			}
+
+			override protected function getCurrentRendererState():String
+			{
+				// fix roll over/out glitch
+				var state:String = super.getCurrentRendererState();
+				return state ? state : currentState;
+			}
+
+			protected function clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new Event('itemClicked', true))
+				// TODO Auto-generated method stub
+			}
+		]]>
+	</fx:Script>
+
+	<s:states>
+		<s:State name="camera"
+				 stateGroups="cameraStates"/>
+		<s:State name="cameraPermission"
+				 stateGroups="cameraStates"/>
+
+	</s:states>
+
+	<s:dataChange>
+		<![CDATA[
+			if (data && data.hasOwnProperty("cameraIndex"))
+			{
+				callLater(showCamera);
+				currentState = "camera";
+			}
+			else
+			{
+				currentState = null
+			}
+		]]>
+	</s:dataChange>
+
+	<views:VideoBlock includeIn="cameraPermission"
+					  currentState="preview"
+					  width="100%"
+					  height="100%"/>
+	<s:BitmapImage id="noCameraImage"
+				   source="@Embed('assets/no_camera.png')"
+				   includeIn="camera"/>
+	<s:BitmapImage id="onlyMicImage"
+				   source="@Embed('assets/only_mic.png')"
+				   excludeFrom="cameraStates"/>
+	<s:Label id="labelDisplay"
+			 horizontalCenter="0"
+			 bottom="5"
+			 text="'Microphone only"
+			 text.cameraStates="{camera}"
+			 color="0xFFFFFF"/>
+	<s:Rect width="100%"
+			height="100%"
+			id="border"
+			visible="false">
+
+		<s:stroke>
+			<s:SolidColorStroke color="0xCCCCCC"
+								weight="2"/>
+		</s:stroke>
+	</s:Rect>
+
+</s:ItemRenderer>

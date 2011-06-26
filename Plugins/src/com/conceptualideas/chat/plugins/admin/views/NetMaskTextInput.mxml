@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			private var _netmask:String
+
+			private var netmaskChanged:Boolean
+
+			public function set netmask(value:String):void
+			{
+				if (netmask == value)
+					return;
+				_netmask = value;
+				netmaskChanged = true;
+				invalidateProperties();
+			}
+
+			public function get netmask():String
+			{
+				var rtn:Array = [];
+				for (var i:int = 1; i <= 4; i++)
+				{
+					rtn.push(TextInput(this["textInput" + i]).text);
+				}
+				return rtn.join(".");
+			}
+
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				if (netmaskChanged)
+				{
+					var parts:Array = _netmask.split(".");
+					var len:int = parts.length;
+					for (var i:int = 1; i <= len; i++)
+					{
+						if (this.hasOwnProperty("textInput" + i))
+						{
+							TextInput(this["textInput" + i]).text = parts[i - 1];
+						}
+					}
+					netmaskChanged = false;
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:TextInput id="textInput1"
+				 width="35"
+				 textAlign="center"
+				 editable="false"/>
+	<s:TextInput id="textInput2"
+				 width="35"
+				 textAlign="center"
+				 editable="false"/>
+	<s:TextInput id="textInput3"
+				 width="35"
+				 textAlign="center"
+				 restrict="0-9*"/>
+	<s:TextInput id="textInput4"
+				 width="35"
+				 textAlign="center"
+				 restrict="0-9*"/>
+</s:HGroup>

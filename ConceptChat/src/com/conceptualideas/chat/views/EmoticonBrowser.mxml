@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	
+	width="400" height="300"
+	
+	title="Emoticon Browser"
+	 
+	 addedToStage="setup()"  close="close()"  xmlns:views="com.conceptualideas.chat.views.*">
+	
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import com.conceptualideas.chat.events.EmoticonBrowserEvent;
+			
+			import flash.events.MouseEvent;
+			import flash.geom.Point;
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var _currentPage:int = 0;
+			private var firstRun:Boolean = true;
+			
+			private var _emoticons:Array
+			
+			
+			
+			
+			override protected function createChildren():void {
+				super.createChildren();
+				addEventListener(EmoticonBrowserEvent.SELECTED, onEmoticonSelected);
+				if(_emoticons)
+					uiGrid.emoticons = _emoticons
+				
+			}
+			
+			private function onEmoticonSelected(e:EmoticonBrowserEvent):void {
+				
+				close();
+			}
+			private function gotoPage(page:int):void{
+				
+			}
+			public function close():void {
+				 stage.removeEventListener(MouseEvent.CLICK,onUserClickMouse,true);
+				 PopUpManager.removePopUp(this);
+			}
+		
+			private function onPageChange(e:MouseEvent, dir:int):void {
+				uiGrid.currentPage += dir;
+			}
+			public function set emoticons(value:Array):void {
+				_emoticons = value;
+				if(uiGrid)
+					uiGrid.emoticons=value;				
+			}
+			/**
+			 * Setup listeners to allow for auto closing when clicked elsewhere
+			 * */
+			public function setup():void {
+				//firstRun = true;
+				
+				stage.addEventListener(MouseEvent.CLICK,onUserClickMouse,true);
+			}
+			
+			private function onUserClickMouse(e:MouseEvent):void {
+				/**
+				 * For some reason the opening click ( on the emotiocon icon) gets caught in this event
+				 * so we make a flag to omit the first click ????
+				 */
+				//if (firstRun) { firstRun = false; return; }
+				
+				if (!hitTestPoint(e.stageX,e.stageY,true)) {
+					
+					
+					close();
+				}
+			}
+			public function show(parent:DisplayObject,modal:Boolean = true):void{
+				 PopUpManager.addPopUp(this,parent,modal);
+				 PopUpManager.centerPopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+
+	<s:Button label="Back" visible="{uiGrid.currentPage!=1}" id="uiPreviousPage" click="onPageChange(event,-1)"  right="210.5" left="117.5" bottom="26" height="21"/>
+	<s:Button label="Next" visible="{((uiGrid.totalPages > 1)?(uiGrid.currentPage != uiGrid.totalPages):false)}" id="uiNextPage" click="onPageChange(event,1)" bottom="26" height="21" right="104"/>
+	<s:TextInput width="37" fontFamily="Arial" text="{uiGrid.currentPage}" visible="{uiGrid.totalPages>1}" id="uiCurrentPage" textAlign="center" horizontalCenter="6" bottom="25" height="23"/>
+	<s:Label text="{uiGrid.currentPage} of {uiGrid.totalPages}" visible="{uiGrid.totalPages>1}" textAlign="center" width="68" horizontalCenter="4" bottom="7" height="21"/>
+	<views:EmoticonBrowserGrid  id="uiGrid" bottom="55" right="10" left="10" top="10" dropShadowVisible="true">
+	</views:EmoticonBrowserGrid>
+	
+</s:TitleWindow>

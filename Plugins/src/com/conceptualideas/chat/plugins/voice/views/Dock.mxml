@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  height="20"
+		  verticalCenter="0">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		.connectDisconnectButton{
+			skinClass:ClassReference('com.conceptualideas.chat.plugins.voice.skins.VoiceChatConnectDisconnectSkin');
+		}
+		.volumeDownButton{
+			skinClass:ClassReference('com.conceptualideas.chat.plugins.voice.skins.VolumeDownSkin');
+		}
+		.volumeUpButton{
+			skinClass:ClassReference('com.conceptualideas.chat.plugins.voice.skins.VolumeUpSkin');
+		}
+	</fx:Style>
+	<fx:Script>
+		<![CDATA[
+			import com.conceptualideas.chat.plugins.voice.interfaces.IVoiceController;
+			import com.conceptualideas.chat.plugins.voice.interfaces.IVoiceModel;
+
+			public var controller:IVoiceController
+
+
+			private function volumeChangeHandler(direction:Number):void
+			{
+				controller.volume = direction;
+
+			}
+
+			private function broadCastHandler():void
+			{
+				if (!controller)
+					return;
+				controller.broadcast = uiBroadcast.selected;
+			//	currentState = uiBroadcast.selected ? "broadCasting" : "default";
+			}
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="default"/>
+		<s:State name="broadCasting"/>
+	</s:states>
+	<s:ToggleButton styleName="connectDisconnectButton"
+					id="uiBroadcast"
+					width="18"
+					height="18"
+					verticalCenter="0"
+					valueCommit="broadCastHandler()"/>
+	<s:Line width="1">
+		<s:stroke>
+			<s:SolidColorStroke color="#cccccc"/>
+		</s:stroke>
+	</s:Line>
+
+	<s:Label text="Broadcast Volume :"
+			 includeIn="broadCasting"
+			 verticalCenter="0"/>
+	<s:Button styleName="volumeDownButton"
+			  width="18"
+			  height="18"
+			  verticalCenter="0"
+			  click="volumeChangeHandler(-20)"
+			  includeIn="broadCasting"/>
+	<s:Button styleName="volumeUpButton"
+			  width="18"
+			  height="18"
+			  verticalCenter="0"
+			  click="volumeChangeHandler(20)"
+			  includeIn="broadCasting"/>
+
+
+</s:HGroup>

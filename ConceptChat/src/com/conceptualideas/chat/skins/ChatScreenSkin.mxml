@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+	 ADOBE SYSTEMS INCORPORATED
+	 Copyright 2008 Adobe Systems Incorporated
+	 All Rights Reserved.
+
+	 NOTICE: Adobe permits you to use, modify, and distribute this file
+	 in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for a Spark SkinnableContainer container.
+
+	 @see spark.components.SkinnableContainer
+
+	 @langversion 3.0
+	 @playerversion Flash 10
+	 @playerversion AIR 1.5
+	 @productversion Flex 4
+-->
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		alpha.disabled="0.5" 
+		xmlns:views="com.conceptualideas.chat.views.*" xmlns:components="com.conceptualideas.chat.components.*" xmlns:text="com.conceptualideas.text.*">
+	<fx:Metadata>[HostComponent("com.conceptualideas.chat.views.ChatScreen")]</fx:Metadata>
+
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="disabled"/>
+
+
+	</s:states>
+
+	<!--- Defines the appearance of the SkinnableContainer class's background. -->
+
+
+	<views:Dock id="dock"
+				width="100%"
+				right="5"
+				left="5"/>
+
+
+	<views:TLFChatWindow id="chatWindow"
+						 top="{dock.x+dock.height}"
+						 width="100%"
+						 right="5"
+						 left="5"
+						 editable="false"
+						 selectable="true"
+						 bottom="29"/>
+	<!-- <views:HTMLChatWindow width="100%" styleName="chatWindow" borderColor="0x1F1F1F"
+		 id="chatWindow"
+		 editable="false"
+		 selectable="true"
+		 height="100%"/>-->
+
+
+
+
+
+
+	<text:AutoCompleteTextInput id="textInput" tabEnabled="false"
+				 bottom="5"
+				 left="5"
+				 right="5"/>
+
+
+
+
+</s:Skin>

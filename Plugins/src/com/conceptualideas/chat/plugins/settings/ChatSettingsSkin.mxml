@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+	 ADOBE SYSTEMS INCORPORATED
+	 Copyright 2008 Adobe Systems Incorporated
+	 All Rights Reserved.
+
+	 NOTICE: Adobe permits you to use, modify, and distribute this file
+	 in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for a Spark SkinnableContainer container.
+
+	 @see spark.components.SkinnableContainer
+
+	 @langversion 3.0
+	 @playerversion Flash 10
+	 @playerversion AIR 1.5
+	 @productversion Flex 4
+-->
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		alpha.disabled="0.5"
+		xmlns:views="com.conceptualideas.chat.views.*">
+	<fx:Metadata>[HostComponent("com.conceptualideas.chat.plugins.settings.view.ChatSettingsComponent")]</fx:Metadata>
+
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="disabled"/>
+	</s:states>
+
+	<s:RectangularDropShadow id="dropShadow"
+							 blurX="17"
+							 blurY="17"
+							 alpha="0.32"
+							 distance="4"
+							 angle="90"
+							 color="#131313"
+							 left="0"
+							 top="0"
+							 right="0"
+							 bottom="0"/>
+	<!--- Defines the appearance of the SkinnableContainer class's background. -->
+	<s:Rect id="background"
+			left="0"
+			right="0"
+			top="0"
+			bottom="0">
+		<s:fill>
+			<!--- @private -->
+			<s:SolidColor id="bgFill"
+						  color="#FFFFFF"/>
+		</s:fill>
+	</s:Rect>
+
+	<!--
+		 Note: setting the minimum size to 0 here so that changes to the host component's
+		 size will not be thwarted by this skin part's minimum size.   This is a compromise,
+		 more about it here: http://bugs.adobe.com/jira/browse/SDK-21143
+	-->
+	<s:Rect id="fill"
+			left="1"
+			right="1"
+			top="1"
+			height="15">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0x3F3F3F"
+								 alpha="0.85"/>
+				<s:GradientEntry color="0x2B2726"
+								 alpha="0.85"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	<s:Label id="title"
+			 top="4"
+			 left="5"
+			 text="Chat Settings"/>
+	<views:Dock id="dock"
+				top="17"
+				left="5"
+				width="100%"
+				minHeight="0"
+				minWidth="0">
+		<views:layout>
+			<s:HorizontalLayout/>
+		</views:layout>
+	</views:Dock>
+
+
+</s:Skin>

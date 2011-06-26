@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400"
+			   height="300"
+			   title="Manage my ignore list"
+			   close="close()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			[Bindable]
+			private var ignoreList:ArrayCollection
+
+
+			private var isPopup:Boolean
+
+			public function show():void
+			{
+				isPopup = true;
+
+				PopUpManager.addPopUp(this, DisplayObject(FlexGlobals.topLevelApplication), true);
+				PopUpManager.centerPopUp(this);
+			}
+
+			public function close():void
+			{
+				if (isPopup)
+					PopUpManager.removePopUp(this);
+				isPopup = false;
+			}
+
+			public function set ignores(value:Array):void
+			{
+				ignoreList = new ArrayCollection(value);
+			}
+		]]>
+	</fx:Script>
+	<s:DataGroup id="dataGroup"
+				 dataProvider="{ignoreList}"
+				 itemRenderer="com.conceptualideas.chat.plugins.manage.renderers.ManageItemRenderer">
+
+	</s:DataGroup>
+	<s:Button label="Close"
+			  horizontalCenter="0"
+			  click="dispatchEvent(new CloseEvent(CloseEvent.CLOSE))"/>
+</s:TitleWindow>
